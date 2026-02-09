@@ -19,7 +19,7 @@ const basicInfoSchema = [
     required: { error: "Name is required" },
     minLength: 3,
     casing: "title",
-    labelPosition: "top",
+    labelPosition: "left",
     autofocus: true,
   },
   {

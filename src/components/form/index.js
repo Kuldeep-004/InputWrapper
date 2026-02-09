@@ -1,7 +1,6 @@
 export { createForm, useCreateForm } from "./createForm";
 export { default as FormRenderer } from "./FormRenderer";
 export { default as BaseInput } from "./BaseInput";
-export { default as useForm } from "./useForm";
 
 export { defaultTheme, themes } from "./defaultTheme";
 

@@ -105,11 +105,11 @@ export default function BaseInput({ formMethods, field, theme }) {
     );
   };
 
-  if (labelPosition === "right") {
+  if (labelPosition === "left") {
     return (
       <div className={`${mergedCss.wrapper} flex-row items-center gap-3`}>
-        {renderInput()}
         {renderLabel()}
+        {renderInput()}
         <div className={mergedCss.error}>{error || "\u00A0"}</div>
       </div>
     );
