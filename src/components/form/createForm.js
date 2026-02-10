@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { typeValidators } from "./validationEngine";
 import { getFieldTypeConfig } from "./fieldTypes";
 
@@ -78,7 +78,6 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
     },
     [fieldMap, schemaIndexMap, schema],
   );
-  console.log(formState);
 
   const validateField = useCallback(
     (id, value) => {
@@ -152,11 +151,16 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
           const field = fieldMap[id];
           if (!field) return;
 
+          const prevValue = formState.values[id] || "";
           let formattedValue = values[id];
           if (field.type) {
             const typeConfig = getFieldTypeConfig(field.type);
             if (typeConfig.formatter) {
-              formattedValue = typeConfig.formatter(formattedValue, field);
+              formattedValue = typeConfig.formatter(
+                formattedValue,
+                prevValue,
+                field,
+              );
             }
           }
 
@@ -167,6 +171,46 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
             formState.errors[id] = null;
           }
         });
+      },
+
+      validateFieldThenNext: (id, value) => {
+        const field = fieldMap[id];
+        const errors = [];
+        if (!field || !field.type) return null;
+
+        if (field.customValidation) {
+          const error = field.customValidation(value);
+          if (error){
+            errors.push(errors);
+          }
+        }
+        if (field.regex) {
+          const regex = field.regex.regex || field.regex;
+          const err = field.regex.error || "Invalid format";
+          if (value && !regex.test(value)) {
+            errors.push(err);
+          }
+        }
+
+        const validator = typeValidators[field.type];
+        const err = validator(value, field);
+        if (err) {
+          errors.push(err);
+        }
+        console.log(errors)
+        if (errors.length == 0) {
+          const nextId = getNextFieldId(id);
+          if (nextId) {
+            const element = document.getElementById(nextId);
+            if (element) {
+              element.focus();
+              if (element.select) element.select();
+            }
+          }
+        }
+        formState.errors[id] = errors.length ? [...errors] : formState.errors[id];
+        formState.touched[id] = true;
+        forceUpdate({});
       },
 
       validateFields: (ids) => {
@@ -256,7 +300,6 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
         const errors = {};
         let hasError = false;
         let firstErrorId = null;
-
         fieldIds.forEach((id) => {
           const value = formState.values[id] || "";
           const error = validateField(id, value);
@@ -270,7 +313,6 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
           formState.errors[id] = error;
           formState.touched[id] = true;
         });
-
         forceUpdate({});
 
         if (hasError && firstErrorId) {

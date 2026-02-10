@@ -1,66 +1,15 @@
 import React from "react";
 import { createForm, FormRenderer } from "./components/form";
 
-const basicInfoSchema = [
+const formSchema = [
   {
     element: (
       <div className="col-span-full">
         <h2 className="text-xl font-semibold text-gray-800 mb-2 mt-4">
-          Basic Information
+          Indian Documents
         </h2>
       </div>
     ),
-  },
-  {
-    id: "name",
-    type: "text",
-    label: "Full Name",
-    placeholder: "Enter your name",
-    required: { error: "Name is required" },
-    minLength: 3,
-    casing: "title",
-    labelPosition: "left",
-    autofocus: true,
-  },
-  {
-    id: "email",
-    type: "email",
-    label: "Email Address",
-    placeholder: "your@email.com",
-    required: "Please enter your email",
-    regex: {
-      regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      error: "Please enter a valid email address",
-    },
-  },
-  {
-    id: "phone",
-    type: "phone",
-    label: "Phone Number",
-    placeholder: "Enter phone number",
-    required: true,
-  },
-];
-
-const businessSchema = [
-  {
-    element: (
-      <div className="col-span-full">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2 mt-6">
-          Business Details
-        </h2>
-      </div>
-    ),
-  },
-  {
-    id: "gst",
-    type: "gst",
-    label: "GST Number",
-    placeholder: "22AAAAA0000A1Z5",
-    required: true,
-    css: {
-      input: "border-2 border-blue-300 focus:border-blue-500",
-    },
   },
   {
     id: "pan",
@@ -68,16 +17,77 @@ const businessSchema = [
     label: "PAN Number",
     placeholder: "ABCDE1234F",
     required: true,
-    next: "revenue",
   },
-];
-
-const financialSchema = [
+  {
+    id: "tan",
+    type: "tan",
+    label: "TAN Number",
+    placeholder: "ABCD12345E",
+    required: true,
+  },
+  {
+    id: "gst",
+    type: "gst",
+    label: "GST Number",
+    placeholder: "22AAAAA0000A1Z5",
+    required: true,
+  },
+  {
+    id: "llp",
+    type: "llp",
+    label: "LLP Number",
+    placeholder: "AAA-1234",
+    required: true,
+  },
+  {
+    id: "cin",
+    type: "cin",
+    label: "CIN Number",
+    placeholder: "U12345AB1234ABC123456",
+    required: true,
+  },
+  {
+    id: "msme",
+    type: "msme",
+    label: "MSME Number",
+    placeholder: "UDYAM-AB-12-1234567",
+    required: true,
+  },
+  {
+    id: "aadhaar",
+    type: "aadhaar",
+    label: "Aadhaar Number",
+    placeholder: "123456789012",
+    required: true,
+  },
   {
     element: (
       <div className="col-span-full">
         <h2 className="text-xl font-semibold text-gray-800 mb-2 mt-6">
-          Financial Information
+          Contact Information
+        </h2>
+      </div>
+    ),
+  },
+  {
+    id: "email",
+    type: "email",
+    label: "Email Address",
+    placeholder: "email@example.com",
+    required: true,
+  },
+  {
+    id: "phone",
+    type: "phone",
+    label: "Phone Number",
+    placeholder: "+91-1234567890",
+    required: true,
+  },
+  {
+    element: (
+      <div className="col-span-full">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2 mt-6">
+          Financial Details
         </h2>
       </div>
     ),
@@ -87,9 +97,7 @@ const financialSchema = [
     type: "currency",
     label: "Annual Revenue",
     placeholder: "0.00",
-    required: true,
-    min: 0,
-    prev: "pan",
+    required: false,
   },
   {
     id: "profitMargin",
@@ -97,20 +105,16 @@ const financialSchema = [
     label: "Profit Margin",
     placeholder: "0.00",
     required: false,
+    precision: 2,
   },
   {
     id: "employees",
     type: "number",
     label: "Number of Employees",
     placeholder: "0",
-    required: true,
-    min: 1,
-    max: 10000,
-    positiveOnly: true,
+    required: false,
+    precision: 2,
   },
-];
-
-const additionalSchema = [
   {
     element: (
       <div className="col-span-full">
@@ -121,155 +125,66 @@ const additionalSchema = [
     ),
   },
   {
+    id: "companyName",
+    type: "text",
+    label: "Company Name",
+    placeholder: "Enter company name",
+    required: false,
+    casing: "title",
+  },
+  {
     id: "website",
     type: "text",
     label: "Website",
     placeholder: "https://example.com",
     required: false,
   },
-  {
-    id: "notes",
-    type: "text",
-    label: "Notes",
-    placeholder: "Any additional notes...",
-    required: false,
-  },
 ];
 
-const App = () => {
-  const [submittedData, setSubmittedData] = React.useState(null);
-
+export default function App() {
   const formMethods = createForm({
-    schema: [
-      ...basicInfoSchema,
-      ...businessSchema,
-      ...financialSchema,
-      ...additionalSchema,
-      {
-        id: "birthdate",
-        type: "text",
-        required: true,
-      },
-    ],
-    theme: {},
-    initialValues: {
-      name: "",
-      birthdate: "",
-    },
+    schema: formSchema,
   });
-console.log(formMethods)
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    formMethods.handleSubmit((values) => {
-      setSubmittedData(values);
+    const result = formMethods.handleSubmit((values) => {
+      alert("Form submitted successfully! Check console for values.");
     });
-  };
 
-  const handleReset = () => {
-    formMethods.reset();
-    setSubmittedData(null);
-  };
-
-  const handleFillSample = () => {
-    formMethods.setValue({
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "9876543210",
-    });
-  };
-
-  const handleResetWithDefaults = () => {
-    formMethods.reset({
-      name: "Default User",
-      email: "default@example.com",
-    });
-    setSubmittedData(null);
+    if (!result.isValid) {
+      console.log("Validation errors:", result.errors);
+    }
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-800">
-            Form Management System
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">
+            Comprehensive Form
           </h1>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="bg-white rounded-lg shadow-sm border border-slate-200 p-8 mb-6"
-        >
-          <FormRenderer formMethods={formMethods} schema={basicInfoSchema} />
-
-          <div className="my-6 p-5 bg-slate-50 border border-slate-200 rounded-lg">
-            <h3 className="text-base font-semibold text-slate-700 mb-3">
-              Custom Date Input
-            </h3>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
-                Birth Date <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                value={formMethods.watch("birthdate") || ""}
-                onChange={(e) => {
-                  formMethods.setValue("birthdate", e.target.value);
-                }}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              
+          <form onSubmit={handleSubmit}>
+            <FormRenderer formMethods={formMethods} />
+            <div className="mt-8 flex gap-4">
+              <button
+                type="submit"
+                onClick={handleSubmit}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Submit
+              </button>
+              <button
+                type="button"
+                onClick={() => formMethods.reset()}
+                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                Reset
+              </button>
             </div>
-          </div>
-
-          <FormRenderer formMethods={formMethods} schema={businessSchema} />
-          <FormRenderer formMethods={formMethods} schema={financialSchema} />
-          <FormRenderer formMethods={formMethods} schema={additionalSchema} />
-
-          <div className="flex gap-3 justify-end pt-6 border-t border-slate-200 mt-8">
-            <button
-              type="button"
-              onClick={handleFillSample}
-              className="px-6 py-2.5 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium"
-            >
-              Fill Sample Data
-            </button>
-            <button
-              type="button"
-              onClick={handleResetWithDefaults}
-              className="px-6 py-2.5 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium"
-            >
-              Reset with Defaults
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="px-6 py-2.5 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium"
-            >
-              Reset Form
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-
-        {submittedData && (
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">
-              Form Submitted Successfully
-            </h3>
-            <pre className="bg-slate-50 p-4 rounded border border-slate-200 overflow-auto text-sm text-slate-700">
-              {JSON.stringify(submittedData, null, 2)}
-            </pre>
-          </div>
-        )}
+          </form>
+        </div>
       </div>
     </div>
   );
-};
-
-export default App;
+}

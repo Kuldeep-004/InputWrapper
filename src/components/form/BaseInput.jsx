@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { defaultTheme } from "./defaultTheme";
 import { getInputComponent } from "./SpecializedInputs";
+import { getFieldTypeConfig } from "./fieldTypes";
 
 export default function BaseInput({ formMethods, field, theme }) {
   const {
@@ -16,7 +17,6 @@ export default function BaseInput({ formMethods, field, theme }) {
     ...rest
   } = field;
 
-  const inputRef = useRef(null);
   const hasAutofocused = useRef(false);
 
   const value = formMethods.watch(id) || "";
@@ -26,9 +26,7 @@ export default function BaseInput({ formMethods, field, theme }) {
   useEffect(() => {
     if (autofocus && !hasAutofocused.current) {
       hasAutofocused.current = true;
-      setTimeout(() => {
-        formMethods.focusField(id);
-      }, 100);
+      formMethods.focusField(id);
     }
   }, []);
 
@@ -40,7 +38,10 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+    if(e.key == "Enter"){
+      e.preventDefault();
+      formMethods.validateFieldThenNext(id,formMethods.getValues([id])[id]);
+    }else if (e.key == "Tab" && !e.shiftKey) {
       e.preventDefault();
       formMethods.validateAndNext(id);
     } else if (e.key === "Tab" && e.shiftKey) {
@@ -50,11 +51,19 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const handleBlur = (e) => {
+    const typeConfig = getFieldTypeConfig(type);
+    if (typeConfig.normalizer) {
+      const currentValue = formMethods.getValues([id])[id];
+      const normalizedValue = typeConfig.normalizer(currentValue, field);
+      if (normalizedValue !== currentValue) {
+        formMethods.setValues({ [id]: normalizedValue });
+      }
+    }
     formMethods.validateFields([id]);
   };
 
   const SpecializedInput = getInputComponent(type);
-
+console.log(error)
   const renderInput = () => {
     if (SpecializedInput) {
       return (
@@ -64,11 +73,11 @@ export default function BaseInput({ formMethods, field, theme }) {
           onChange={(id, val) => formMethods.setValues({ [id]: val })}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className={`${mergedCss.input} ${className} ${
+          className={`${
             error
               ? "border-red-500 focus:ring-red-500 focus:border-red-500"
               : ""
-          }`}
+          } ${mergedCss.input} ${className} `}
           placeholder={placeholder}
           disabled={disabled}
           config={field}
@@ -80,14 +89,14 @@ export default function BaseInput({ formMethods, field, theme }) {
     return (
       <input
         id={id}
-        type={type === "text" || type === "alphanumeric" ? "text" : type}
+        type={type === "text" ? "text" : type}
         value={value}
         onChange={(e) => formMethods.setValues({ [id]: e.target.value })}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        className={`${mergedCss.input} ${className} ${
+        className={`${
           error ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""
-        }`}
+        } ${mergedCss.input} ${className} `}
         placeholder={placeholder}
         disabled={disabled}
         {...rest}
@@ -107,7 +116,7 @@ export default function BaseInput({ formMethods, field, theme }) {
 
   if (labelPosition === "left") {
     return (
-      <div className={`${mergedCss.wrapper} flex-row items-center gap-3`}>
+      <div className={`flex-row items-center gap-3 ${mergedCss.wrapper}`}>
         {renderLabel()}
         {renderInput()}
         <div className={mergedCss.error}>{error || "\u00A0"}</div>

@@ -1,120 +1,3 @@
-const validationRules = {
-  required: (value, message = "This field is required") => {
-    if (!value || (typeof value === "string" && !value.trim())) {
-      return message;
-    }
-    return null;
-  },
-
-  minLength: (value, min, message) => {
-    if (value && value.length < min) {
-      return message || `Minimum ${min} characters required`;
-    }
-    return null;
-  },
-
-  maxLength: (value, max, message) => {
-    if (value && value.length > max) {
-      return message || `Maximum ${max} characters allowed`;
-    }
-    return null;
-  },
-
-  min: (value, min, message) => {
-    const num = parseFloat(value);
-    if (!isNaN(num) && num < min) {
-      return message || `Minimum value is ${min}`;
-    }
-    return null;
-  },
-
-  max: (value, max, message) => {
-    const num = parseFloat(value);
-    if (!isNaN(num) && num > max) {
-      return message || `Maximum value is ${max}`;
-    }
-    return null;
-  },
-
-  pattern: (value, regex, message = "Invalid format") => {
-    if (value && !regex.test(value)) {
-      return message;
-    }
-    return null;
-  },
-
-  email: (value, message = "Invalid email address") => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (value && !emailRegex.test(value)) {
-      return message;
-    }
-    return null;
-  },
-
-  number: (value, message = "Must be a valid number") => {
-    if (value && isNaN(parseFloat(value))) {
-      return message;
-    }
-    return null;
-  },
-
-  percentage: (value, message = "Must be between 0 and 100") => {
-    const num = parseFloat(value);
-    if (value && (isNaN(num) || num < 0 || num > 100)) {
-      return message;
-    }
-    return null;
-  },
-
-  gst: (value, message = "Invalid GST number") => {
-    const gstRegex =
-      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-    if (value && !gstRegex.test(value)) {
-      return message;
-    }
-    return null;
-  },
-
-  pan: (value, message = "Invalid PAN number") => {
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    if (value && !panRegex.test(value)) {
-      return message;
-    }
-    return null;
-  },
-
-  custom: (value, validatorFn, message = "Invalid value") => {
-    if (value && validatorFn && !validatorFn(value)) {
-      return message;
-    }
-    return null;
-  },
-};
-
-export function validateField(fieldId, value, fieldConfig) {
-  if (!fieldConfig || !fieldConfig.validations) {
-    return null;
-  }
-
-  const validations = fieldConfig.validations;
-
-  for (const validation of validations) {
-    const { rule, params = [], message } = validation;
-
-    if (!validationRules[rule]) {
-      console.warn(`Unknown validation rule: ${rule}`);
-      continue;
-    }
-
-    const error = validationRules[rule](value, ...params, message);
-    if (error) {
-      return error;
-    }
-  }
-
-  return null;
-}
-
 export const typeValidators = {
   text: (value, config) => {
     const errors = [];
@@ -169,16 +52,13 @@ export const typeValidators = {
     return errors[0] || null;
   },
 
-  gst: (value, config) => {
+  gst: (value,config) => {
     const errors = [];
-
     if (config.required && !value?.trim()) {
       errors.push("GST number is required");
     }
-
-    if (value) {
-      const gstRegex =
-        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    if(value){
+      const gstRegex= /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}Z[A-Z0-9]{1}$/;
       if (!gstRegex.test(value)) {
         errors.push("Invalid GST number format");
       }
@@ -202,6 +82,86 @@ export const typeValidators = {
     return errors[0] || null;
   },
 
+  tan: (value, config) => {
+    const errors = [];
+    console.log(value)
+    if (config.required && !value?.trim()) {
+      errors.push("TAN number is required");
+    }
+
+    if (value) {
+      const tanRegex = /^[A-Z]{4}[0-9]{5}[A-Z]{1}$/;
+      if (!tanRegex.test(value)) {
+        errors.push("Invalid TAN number format");
+      }
+    }
+    return errors[0] || null;
+  },
+
+  llp: (value, config) => {
+    const errors = [];
+
+    if (config.required && !value?.trim()) {
+      errors.push("LLP number is required");
+    }
+
+    if (value) {
+      const llpRegex = /^[A-Z]{3}-[0-9]{4}$/;
+      if (!llpRegex.test(value)) {
+        errors.push("Invalid LLP number format");
+      }
+    }
+    return errors[0] || null;
+  },
+
+  cin: (value, config) => {
+    const errors = [];
+
+    if (config.required && !value?.trim()) {
+      errors.push("CIN number is required");
+    }
+
+    if (value) {
+      const cinRegex = /^[UL][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/;
+      if (!cinRegex.test(value)) {
+        errors.push("Invalid CIN number format");
+      }
+    }
+    return errors[0] || null;
+  },
+
+  msme: (value, config) => {
+    const errors = [];
+
+    if (config.required && !value?.trim()) {
+      errors.push("MSME number is required");
+    }
+
+    if (value) {
+      const msmeRegex = /^[A-Z]{5}-[0-9]{2}-[0-9]{4}-[0-9]{5}$/;
+      if (!msmeRegex.test(value)) {
+        errors.push("Invalid MSME number format");
+      }
+    }
+    return errors[0] || null;
+  },
+
+  aadhaar: (value, config) => {
+    const errors = [];
+
+    if (config.required && !value?.trim()) {
+      errors.push("Aadhaar number is required");
+    }
+
+    if (value) {
+      const aadhaarRegex = /^[0-9]{12}$/;
+      if (!aadhaarRegex.test(value)) {
+        errors.push("Invalid Aadhaar number format");
+      }
+    }
+    return errors[0] || null;
+  },
+
   email: (value, config) => {
     const errors = [];
 
@@ -210,31 +170,14 @@ export const typeValidators = {
     }
 
     if (value) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
+      const hasAt = value.includes("@");
+      const hasDot = value.includes(".");
+      const startsWithInvalid = value.startsWith("@") || value.startsWith(".");
+
+      if (!hasAt || !hasDot || startsWithInvalid) {
         errors.push("Invalid email address");
       }
     }
     return errors[0] || null;
   },
 };
-
-export function validateForm(values, schema) {
-  const errors = {};
-
-  for (const field of schema) {
-    if (!field.id || !field.type) continue;
-
-    const value = values[field.id];
-    const validator = typeValidators[field.type];
-
-    if (validator) {
-      const error = validator(value, field);
-      if (error) {
-        errors[field.id] = error;
-      }
-    }
-  }
-
-  return errors;
-}

@@ -1,4 +1,3 @@
-import React from "react";
 import { fieldTypeMetadata } from "./fieldTypes";
 
 export function NumberInput({
@@ -7,7 +6,6 @@ export function NumberInput({
   onChange,
   onBlur,
   className = "",
-  config = {},
   ...props
 }) {
   const metadata = fieldTypeMetadata.number;
@@ -31,7 +29,6 @@ export function PercentageInput({
   onChange,
   onBlur,
   className = "",
-  config = {},
   ...props
 }) {
   const metadata = fieldTypeMetadata.percentage;
@@ -60,7 +57,6 @@ export function GSTInput({
   onChange,
   onBlur,
   className = "",
-  config = {},
   ...props
 }) {
   const metadata = fieldTypeMetadata.gst;
@@ -84,10 +80,181 @@ export function PANInput({
   onChange,
   onBlur,
   className = "",
-  config = {},
   ...props
 }) {
   const metadata = fieldTypeMetadata.pan;
+
+  return (
+    <input
+      id={id}
+      value={value || ""}
+      onChange={(e) => onChange(id, e.target.value)}
+      onBlur={onBlur}
+      className={className}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
+export function TANInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  className = "",
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.tan;
+
+  return (
+    <input
+      id={id}
+      value={value || ""}
+      onChange={(e) => onChange(id, e.target.value)}
+      onBlur={onBlur}
+      className={className}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
+export function LLPInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  className = "",
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.llp;
+
+  return (
+    <input
+      id={id}
+      value={value || ""}
+      onChange={(e) => onChange(id, e.target.value)}
+      onBlur={onBlur}
+      className={className}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
+export function CINInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  className = "",
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.cin;
+
+  return (
+    <input
+      id={id}
+      value={value || ""}
+      onChange={(e) => onChange(id, e.target.value)}
+      onBlur={onBlur}
+      className={className}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
+export function MSMEInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  className = "",
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.msme;
+
+  return (
+    <input
+      id={id}
+      value={value || ""}
+      onChange={(e) => onChange(id, e.target.value)}
+      onBlur={onBlur}
+      className={className}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
+export function AadhaarInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  className = "",
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.aadhaar;
+
+  return (
+    <input
+      id={id}
+      value={value || ""}
+      onChange={(e) => onChange(id, e.target.value)}
+      onBlur={onBlur}
+      className={className}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
+export function EmailInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  onKeyDown,
+  className = "",
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.email;
+
+  const handleKeyDown = (e) => {
+    if (e.key === " ") {
+      e.preventDefault();
+    }
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  return (
+    <input
+      id={id}
+      value={value || ""}
+      onChange={(e) => onChange(id, e.target.value)}
+      onBlur={onBlur}
+      onKeyDown={handleKeyDown}
+      className={className}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
+export function PhoneInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  className = "",
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.phone;
 
   return (
     <input
@@ -132,62 +299,19 @@ export function CurrencyInput({
   );
 }
 
-export function EmailInput({
-  id,
-  value,
-  onChange,
-  onBlur,
-  className = "",
-  config = {},
-  ...props
-}) {
-  const metadata = fieldTypeMetadata.email;
-
-  return (
-    <input
-      id={id}
-      value={value || ""}
-      onChange={(e) => onChange(id, e.target.value)}
-      onBlur={onBlur}
-      className={className}
-      {...metadata.defaultProps}
-      {...props}
-    />
-  );
-}
-
-export function PhoneInput({
-  id,
-  value,
-  onChange,
-  onBlur,
-  className = "",
-  config = {},
-  ...props
-}) {
-  const metadata = fieldTypeMetadata.phone;
-
-  return (
-    <input
-      id={id}
-      value={value || ""}
-      onChange={(e) => onChange(id, e.target.value)}
-      onBlur={onBlur}
-      className={className}
-      {...metadata.defaultProps}
-      {...props}
-    />
-  );
-}
-
 export function getInputComponent(type) {
   const components = {
     number: NumberInput,
     percentage: PercentageInput,
     gst: GSTInput,
     pan: PANInput,
-    currency: CurrencyInput,
+    tan: TANInput,
+    llp: LLPInput,
+    cin: CINInput,
+    msme: MSMEInput,
+    aadhaar: AadhaarInput,
     email: EmailInput,
+    currency: CurrencyInput,
     phone: PhoneInput,
   };
 

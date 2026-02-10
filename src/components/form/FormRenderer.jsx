@@ -2,7 +2,7 @@ import React from "react";
 import BaseInput from "./BaseInput";
 import { defaultTheme } from "./defaultTheme";
 
-export default function FormRenderer({ formMethods, schema, children }) {
+export default function FormRenderer({ formMethods, schema }) {
   const internalSchema = formMethods._internal.schema;
   const activeSchema = schema || internalSchema;
   const { theme } = formMethods._internal;
@@ -34,12 +34,6 @@ export default function FormRenderer({ formMethods, schema, children }) {
           return null;
         })}
       </div>
-
-      {children && (
-        <div className={mergedTheme.actions || "mt-6"}>
-          {typeof children === "function" ? children(formMethods) : children}
-        </div>
-      )}
     </div>
   );
 }
