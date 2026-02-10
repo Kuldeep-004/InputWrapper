@@ -13,7 +13,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
   const [, forceUpdate] = useState({});
 
   const fieldIds = useMemo(
-    () => schema.filter((f) => f.id && f.type).map((f) => f.id),
+    () => schema.filter((f) => f.id && !schema.element).map((f) => f.id),
     [schema],
   );
 
@@ -82,7 +82,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
   const validateField = useCallback(
     (id, value) => {
       const field = fieldMap[id];
-      if (!field || !field.type) return null;
+      if (!field || field.element) return null;
 
       if (field.customValidation) {
         const error = field.customValidation(value);
@@ -180,7 +180,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
 
         if (field.customValidation) {
           const error = field.customValidation(value);
-          if (error){
+          if (error) {
             errors.push(errors);
           }
         }

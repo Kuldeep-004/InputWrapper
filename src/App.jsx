@@ -1,4 +1,3 @@
-import React from "react";
 import { createForm, FormRenderer } from "./components/form";
 
 const formSchema = [
@@ -6,7 +5,7 @@ const formSchema = [
     element: (
       <div className="col-span-full">
         <h2 className="text-xl font-semibold text-gray-800 mb-2 mt-4">
-          Indian Documents
+          Documents
         </h2>
       </div>
     ),
@@ -25,6 +24,10 @@ const formSchema = [
     label: "TAN Number",
     placeholder: "ABCD12345E",
     required: true,
+  },
+  {
+    id:"customDate",
+    required:true,
   },
   {
     id: "gst",
@@ -140,6 +143,7 @@ const formSchema = [
     label: "Website",
     placeholder: "https://example.com",
     required: false,
+    next:"submitBtn"
   },
 ];
 
@@ -163,12 +167,11 @@ export default function App() {
     <div className="min-h-screen bg-gray-600 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-gray-500 rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">
-            Comprehensive Form
-          </h1>
+          <input id={"customDate"} value={formMethods.watch("customDate")} onChange={(e)=>formMethods.setValues({customDate:e.target.value})} onBlur={() => formMethods.validateFields(["customDate"])} type="date"/>
             <FormRenderer formMethods={formMethods} />
             <div className="mt-8 flex gap-4">
               <button
+                id="submitBtn"
                 type="submit"
                 onClick={handleSubmit}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
