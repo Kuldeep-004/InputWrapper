@@ -17,6 +17,7 @@ export default function BaseInput({ formMethods, field, theme }) {
     ...rest
   } = field;
 
+  const inputRef = useRef(null);
   const hasAutofocused = useRef(false);
 
   const value = formMethods.watch(id) || "";
@@ -38,10 +39,23 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const handleKeyDown = (e) => {
-    if(e.key == "Enter"){
+    const el = inputRef.current;
+    if (e.key === "Backspace" && el && el.selectionStart < value.length) {
+      if (
+        el.selectionStart != el.selectionEnd &&
+        el.selectionEnd == value.length
+      )
+        return;
       e.preventDefault();
-      formMethods.validateFieldThenNext(id,formMethods.getValues([id])[id]);
-    }else if (e.key == "Tab" && !e.shiftKey) {
+      setTimeout(() => {
+        el.setSelectionRange(value.length, value.length);
+      }, 0);
+      return;
+    }
+    if (e.key == "Enter") {
+      e.preventDefault();
+      formMethods.validateFieldThenNext(id, formMethods.getValues([id])[id]);
+    } else if (e.key == "Tab" && !e.shiftKey) {
       e.preventDefault();
       formMethods.validateAndNext(id);
     } else if (e.key === "Tab" && e.shiftKey) {
@@ -63,12 +77,13 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const SpecializedInput = getInputComponent(type);
-console.log(error)
+
   const renderInput = () => {
     if (SpecializedInput) {
       return (
         <SpecializedInput
           id={id}
+          ref={inputRef}
           value={value}
           onChange={(id, val) => formMethods.setValues({ [id]: val })}
           onBlur={handleBlur}

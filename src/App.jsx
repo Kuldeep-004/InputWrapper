@@ -15,6 +15,7 @@ const formSchema = [
     id: "pan",
     type: "pan",
     label: "PAN Number",
+    autoFocus:true,
     placeholder: "ABCDE1234F",
     required: true,
   },
@@ -96,6 +97,7 @@ const formSchema = [
     id: "revenue",
     type: "currency",
     label: "Annual Revenue",
+    min:10,
     placeholder: "0.00",
     required: false,
   },
@@ -158,13 +160,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
+    <div className="min-h-screen bg-gray-600 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-gray-500 rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">
             Comprehensive Form
           </h1>
-          <form onSubmit={handleSubmit}>
             <FormRenderer formMethods={formMethods} />
             <div className="mt-8 flex gap-4">
               <button
@@ -182,7 +183,6 @@ export default function App() {
                 Reset
               </button>
             </div>
-          </form>
         </div>
       </div>
     </div>

@@ -38,7 +38,7 @@ export const typeValidators = {
     return errors[0] || null;
   },
 
-  percentage: (value, config) => {
+  currency: (value, config) => {
     const errors = [];
 
     if (config.required && !value) {
@@ -46,8 +46,31 @@ export const typeValidators = {
     }
 
     const num = parseFloat(value);
-    if (value && (isNaN(num) || num < 0 || num > 100)) {
-      errors.push("Must be between 0 and 100");
+    if (value && isNaN(num)) {
+      errors.push("Must be a valid number");
+      return errors[0];
+    }
+    if (config.min !== undefined && num < config.min) {
+      errors.push(`Minimum value is ${config.min}`);
+    }
+    if (config.max !== undefined && num > config.max) {
+      errors.push(`Maximum value is ${config.max}`);
+    }
+    return errors[0] || null;
+  },
+
+  percentage: (value, config) => {
+    const errors = [];
+    const min=config.min ?? 0;
+    const max=config.max ?? 100;
+
+    if (config.required && !value) {
+      errors.push("This field is required");
+    }
+
+    const num = parseFloat(value);
+    if (value && (isNaN(num) || num < min || num > max)) {
+      errors.push(`Must be between ${min} and ${max}`);
     }
     return errors[0] || null;
   },

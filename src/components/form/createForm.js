@@ -158,8 +158,8 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
             if (typeConfig.formatter) {
               formattedValue = typeConfig.formatter(
                 formattedValue,
-                prevValue,
                 field,
+                prevValue,
               );
             }
           }
@@ -197,7 +197,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
         if (err) {
           errors.push(err);
         }
-        console.log(errors)
+
         if (errors.length == 0) {
           const nextId = getNextFieldId(id);
           if (nextId) {
@@ -208,7 +208,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
             }
           }
         }
-        formState.errors[id] = errors.length ? [...errors] : formState.errors[id];
+        formState.errors[id] = errors.length ? errors[0] : formState.errors[id];
         formState.touched[id] = true;
         forceUpdate({});
       },
@@ -296,6 +296,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
       getTouched: () => {
         return { ...formState.touched };
       },
+
       handleSubmit: (onSubmit) => {
         const errors = {};
         let hasError = false;
