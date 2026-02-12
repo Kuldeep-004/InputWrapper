@@ -201,44 +201,22 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
         });
       },
 
-      validateFieldThenNext: (id, value) => {
-        const field = fieldMap[id];
-        const errors = [];
-        if (!field || !field.type) return null;
-
-        if (field.customValidation) {
-          const error = field.customValidation(value);
-          if (error) {
-            errors.push(errors);
-          }
-        }
-        if (field.regex) {
-          const regex = field.regex.regex || field.regex;
-          const err = field.regex.error || "Invalid format";
-          if (value && !regex.test(value)) {
-            errors.push(err);
-          }
-        }
-
-        const validator = typeValidators[field.type];
-        const err = validator?.(value, field);
-        if (err) {
-          errors.push(err);
-        }
-
-        if (errors.length == 0) {
-          const nextId = getNextFieldId(id);
-          if (nextId) {
-            const element = document.getElementById(nextId);
-            if (element) {
-              element.focus();
-              if (element.select) element.select();
-            }
-          }
-        }
-        formState.errors[id] = errors.length ? errors[0] : formState.errors[id];
+      validateFieldThenNext: (id) => {
+        const currentValue = formState.values[id] || "";
+        const error = validateField(id, currentValue);
+        formState.errors[id] = error;
         formState.touched[id] = true;
+
+        const nextId = getNextFieldId(id);
+        if (!error && nextId) {
+          const element = document.getElementById(nextId);
+          if (element) {
+            element.focus();
+            if (element.select) element.select();
+          }
+        }
         forceUpdate({});
+        return error;
       },
 
       validateFields: (ids) => {
@@ -308,6 +286,22 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
         allIds.forEach((id) => {
           notifyWatchers(id);
         });
+        forceUpdate({});
+      },
+
+      clearFields: (ids) => {
+        if (!Array.isArray(ids)) return;
+
+        ids.forEach((id) => {
+          if (!fieldMap[id]) return;
+
+          formState.values[id] = "";
+          formState.errors[id] = null;
+          formState.touched[id] = false;
+
+          notifyWatchers(id);
+        });
+
         forceUpdate({});
       },
 

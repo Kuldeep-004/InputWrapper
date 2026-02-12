@@ -107,7 +107,6 @@ export const typeValidators = {
 
   tan: (value, config) => {
     const errors = [];
-    console.log(value)
     if (config.required && !value?.trim()) {
       errors.push("TAN number is required");
     }

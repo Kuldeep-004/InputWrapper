@@ -103,6 +103,7 @@ export default function BaseInput({ formMethods, field, theme }) {
           placeholder={placeholder}
           disabled={disabled}
           config={field}
+          spellCheck="false"
           {...rest}
         />
       );
