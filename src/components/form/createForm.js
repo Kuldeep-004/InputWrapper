@@ -302,8 +302,8 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
         formState.errors = {};
         formState.touched = {};
 
-        const firstElId=fieldIds[0];
-        if(firstElId) document.getElementById(firstElId).focus();
+        const firstElId = fieldIds[0];
+        if (firstElId) document.getElementById(firstElId).focus();
 
         allIds.forEach((id) => {
           notifyWatchers(id);
@@ -344,14 +344,12 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
 
       clearErrors: (ids) => {
         if (ids && Array.isArray(ids)) {
-          // Clear errors for specific fields
           ids.forEach((id) => {
             if (fieldMap[id]) {
               formState.errors[id] = null;
             }
           });
         } else {
-          // Clear all errors
           allIds.forEach((id) => {
             formState.errors[id] = null;
           });

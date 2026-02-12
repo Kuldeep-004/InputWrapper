@@ -14,7 +14,7 @@ const formSchema = [
     id: "pan",
     type: "pan",
     label: "PAN Number",
-    autoFocus:true,
+    autoFocus: true,
     placeholder: "ABCDE1234F",
     required: true,
   },
@@ -26,8 +26,8 @@ const formSchema = [
     required: true,
   },
   {
-    id:"customDate",
-    required:true,
+    id: "customDate",
+    required: true,
   },
   {
     id: "gst",
@@ -100,7 +100,7 @@ const formSchema = [
     id: "revenue",
     type: "currency",
     label: "Annual Revenue",
-    min:10,
+    min: 10,
     placeholder: "0.00",
     required: false,
   },
@@ -156,7 +156,7 @@ const formSchema = [
   {
     id: "agreeToTerms",
     type: "checkbox",
-    labelPosition:"left",
+    labelPosition: "left",
     label: "I agree to the terms and conditions",
     required: false,
   },
@@ -189,25 +189,60 @@ export default function App() {
     <div className="min-h-screen bg-gray-600 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-gray-500 rounded-lg shadow-lg p-8">
-          <input id={"customDate"} value={formMethods.watch("customDate")} onChange={(e)=>formMethods.setValues({customDate:e.target.value})} onBlur={() => formMethods.validateFields(["customDate"])} type="date"/>
-            <FormRenderer formMethods={formMethods} />
-            <div className="mt-8 flex gap-4">
-              <button
-                id="submitBtn"
-                type="submit"
-                onClick={handleSubmit}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Submit
-              </button>
-              <button
-                type="button"
-                onClick={() => formMethods.reset()}
-                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                Reset
-              </button>
-            </div>
+          <input
+            id={"customDate"}
+            value={formMethods.watch("customDate")}
+            onChange={(e) =>
+              formMethods.setValues({ customDate: e.target.value })
+            }
+            onBlur={() => formMethods.validateFields(["customDate"])}
+            type="date"
+          />
+          <FormRenderer formMethods={formMethods} />
+          <div className="mt-8 flex gap-4 flex-wrap">
+            <button
+              id="submitBtn"
+              type="submit"
+              onClick={handleSubmit}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Submit
+            </button>
+            <button
+              type="button"
+              onClick={() => formMethods.reset()}
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                formMethods.setErrors({
+                  pan: "Custom error for PAN",
+                  email: "Custom error for Email",
+                  tan: "Custom Error For Tan",
+                })
+              }
+              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Set Errors
+            </button>
+            <button
+              type="button"
+              onClick={() => formMethods.clearErrors()}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Clear All Errors
+            </button>
+            <button
+              type="button"
+              onClick={() => formMethods.clearErrors(["pan"])}
+              className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
+            >
+              Clear PAN Error
+            </button>
+          </div>
         </div>
       </div>
     </div>
