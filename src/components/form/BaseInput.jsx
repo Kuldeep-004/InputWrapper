@@ -40,7 +40,14 @@ export default function BaseInput({ formMethods, field, theme }) {
 
   const handleKeyDown = (e) => {
     const el = inputRef.current;
-    if (e.key === "Backspace" && el && el.selectionStart < value.length) {
+    if (e.key == "Escape") {
+      e.preventDefault();
+      e.target.blur();
+    } else if (
+      e.key === "Backspace" &&
+      el &&
+      el.selectionStart < value.length
+    ) {
       if (
         el.selectionStart != el.selectionEnd &&
         el.selectionEnd == value.length
