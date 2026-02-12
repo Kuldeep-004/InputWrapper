@@ -114,13 +114,14 @@ export default function BaseInput({ formMethods, field, theme }) {
         } ${mergedCss.input} ${className} `}
         placeholder={placeholder}
         disabled={disabled}
+        spellCheck="false"
         {...rest}
       />
     );
   };
 
   const renderLabel = () => {
-    if (!label) return null;
+    if (!label || type == "checkbox") return null;
     return (
       <label htmlFor={id} className={mergedCss.label}>
         {label}
@@ -128,6 +129,16 @@ export default function BaseInput({ formMethods, field, theme }) {
       </label>
     );
   };
+
+  // // Special rendering for checkbox type
+  // if (type === "checkbox") {
+  //   return (
+  //     <div className={`flex items-center gap-3 ${mergedCss.wrapper}`}>
+  //       {renderInput()}
+  //       {renderLabel()}
+  //     </div>
+  //   );
+  // }
 
   if (labelPosition === "left") {
     return (

@@ -327,6 +327,10 @@ export const formatters = {
 
     return cleaned;
   },
+
+  checkbox: (value) => {
+    return Boolean(value);
+  },
 };
 
 export function getFieldTypeConfig(type) {
@@ -442,6 +446,12 @@ export const fieldTypeMetadata = {
     defaultProps: {
       type: "text",
       autoComplete: "off",
+    },
+  },
+  checkbox: {
+    defaultProps: {
+      type: "checkbox",
+      role: "checkbox",
     },
   },
 };

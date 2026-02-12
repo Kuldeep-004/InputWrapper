@@ -114,23 +114,51 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
   const formMethods = useMemo(
     () => ({
       watch: (id) => {
-        const [value, setValue] = useState(formState.values[id]);
+        if (id) {
+          const [value, setValue] = useState(formState.values[id]);
 
-        useEffect(() => {
-          if (!formState.watchers.has(id)) {
-            formState.watchers.set(id, new Set());
-          }
-          formState.watchers.get(id).add(setValue);
-
-          return () => {
-            const watchers = formState.watchers.get(id);
-            if (watchers) {
-              watchers.delete(setValue);
+          useEffect(() => {
+            if (!formState.watchers.has(id)) {
+              formState.watchers.set(id, new Set());
             }
-          };
-        }, [id]);
+            formState.watchers.get(id).add(setValue);
 
-        return value;
+            return () => {
+              const watchers = formState.watchers.get(id);
+              if (watchers) {
+                watchers.delete(setValue);
+              }
+            };
+          }, [id]);
+
+          return value;
+        } else {
+          const [allValues, setAllValues] = useState({ ...formState.values });
+
+          useEffect(() => {
+            const updateAllValues = () => {
+              setAllValues({ ...formState.values });
+            };
+
+            allIds.forEach((fieldId) => {
+              if (!formState.watchers.has(fieldId)) {
+                formState.watchers.set(fieldId, new Set());
+              }
+              formState.watchers.get(fieldId).add(updateAllValues);
+            });
+
+            return () => {
+              allIds.forEach((fieldId) => {
+                const watchers = formState.watchers.get(fieldId);
+                if (watchers) {
+                  watchers.delete(updateAllValues);
+                }
+              });
+            };
+          }, []);
+
+          return allValues;
+        }
       },
 
       getValues: (ids) => {
@@ -193,7 +221,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
         }
 
         const validator = typeValidators[field.type];
-        const err = validator(value, field);
+        const err = validator?.(value, field);
         if (err) {
           errors.push(err);
         }

@@ -143,7 +143,29 @@ const formSchema = [
     label: "Website",
     placeholder: "https://example.com",
     required: false,
-    next:"submitBtn"
+  },
+  {
+    element: (
+      <div className="col-span-full">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2 mt-6">
+          Terms & Conditions
+        </h2>
+      </div>
+    ),
+  },
+  {
+    id: "agreeToTerms",
+    type: "checkbox",
+    labelPosition:"left",
+    label: "I agree to the terms and conditions",
+    required: false,
+  },
+  {
+    id: "subscribeNewsletter",
+    type: "checkbox",
+    label: "Subscribe to newsletter",
+    required: false,
+    next: "submitBtn",
   },
 ];
 

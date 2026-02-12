@@ -1,5 +1,50 @@
 import { fieldTypeMetadata } from "./fieldTypes";
 
+export function CheckboxInput({
+  id,
+  value,
+  onChange,
+  onKeyDown,
+  className = "",
+  disabled = false,
+  ...props
+}) {
+  const metadata = fieldTypeMetadata.checkbox;
+  const isChecked = Boolean(value);
+
+  const handleKeyDown = (e) => {
+    if (e.key === " ") {
+      e.preventDefault();
+      if (!disabled) {
+        onChange(id, !isChecked);
+      }
+    }
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  const handleChange = (e) => {
+    if (!disabled) {
+      onChange(id, e.target.checked);
+    }
+  };
+
+  return (
+    <input
+      id={id}
+      type="checkbox"
+      checked={isChecked}
+      onChange={handleChange}
+      onKeyDown={handleKeyDown}
+      className={className}
+      disabled={disabled}
+      {...metadata.defaultProps}
+      {...props}
+    />
+  );
+}
+
 export function NumberInput({
   id,
   value,
@@ -301,6 +346,7 @@ export function CurrencyInput({
 
 export function getInputComponent(type) {
   const components = {
+    checkbox: CheckboxInput,
     number: NumberInput,
     percentage: PercentageInput,
     gst: GSTInput,
