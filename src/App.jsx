@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { createForm, FormRenderer } from "./components/form";
 
 const formSchema = [
@@ -170,13 +171,25 @@ const formSchema = [
 ];
 
 export default function App() {
+  const [dynamicSchema, setDynamicSchema] = useState(formSchema);
   const formMethods = createForm({
-    schema: formSchema,
+    schema: dynamicSchema,
   });
 
+  const pan=formMethods.watch("pan");
+
+  useEffect(()=>{
+    if(pan?.length>4){
+      setDynamicSchema((prev)=>
+        prev.map((p)=>({...p,required:false}))
+      )
+    }
+  },[pan])
+
+console.log(dynamicSchema)
   const handleSubmit = (e) => {
     e.preventDefault();
-    const result = formMethods.handleSubmit((values) => {
+    const result = formMethods.handleSubmit(() => {
       alert("Form submitted successfully! Check console for values.");
     });
 

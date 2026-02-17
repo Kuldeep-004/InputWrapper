@@ -111,55 +111,54 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
     [fieldMap],
   );
 
+  const useWatch = (id) => {
+  const [value, setValue] = useState(formState.values[id]);
+
+  useEffect(() => {
+    if (!formState.watchers.has(id)) {
+      formState.watchers.set(id, new Set());
+    }
+
+    const set = formState.watchers.get(id);
+    set.add(setValue);
+
+    return () => {
+      set.delete(setValue);
+    };
+  }, [id]);
+
+  return value;
+};
+
+const useWatchAll = () => {
+  const [allValues, setAllValues] = useState({ ...formState.values });
+
+  useEffect(() => {
+    const update = () => setAllValues({ ...formState.values });
+
+    allIds.forEach((fieldId) => {
+      if (!formState.watchers.has(fieldId)) {
+        formState.watchers.set(fieldId, new Set());
+      }
+      formState.watchers.get(fieldId).add(update);
+    });
+
+    return () => {
+      allIds.forEach((fieldId) => {
+        const set = formState.watchers.get(fieldId);
+        if (set) set.delete(update);
+      });
+    };
+  }, [allIds]);
+
+  return allValues;
+};
+
   const formMethods = useMemo(
     () => ({
-      watch: (id) => {
-        if (id) {
-          const [value, setValue] = useState(formState.values[id]);
+      watch: useWatch,
 
-          useEffect(() => {
-            if (!formState.watchers.has(id)) {
-              formState.watchers.set(id, new Set());
-            }
-            formState.watchers.get(id).add(setValue);
-
-            return () => {
-              const watchers = formState.watchers.get(id);
-              if (watchers) {
-                watchers.delete(setValue);
-              }
-            };
-          }, [id]);
-
-          return value;
-        } else {
-          const [allValues, setAllValues] = useState({ ...formState.values });
-
-          useEffect(() => {
-            const updateAllValues = () => {
-              setAllValues({ ...formState.values });
-            };
-
-            allIds.forEach((fieldId) => {
-              if (!formState.watchers.has(fieldId)) {
-                formState.watchers.set(fieldId, new Set());
-              }
-              formState.watchers.get(fieldId).add(updateAllValues);
-            });
-
-            return () => {
-              allIds.forEach((fieldId) => {
-                const watchers = formState.watchers.get(fieldId);
-                if (watchers) {
-                  watchers.delete(updateAllValues);
-                }
-              });
-            };
-          }, []);
-
-          return allValues;
-        }
-      },
+      watchAll: useWatchAll,
 
       getValues: (ids) => {
         if (Array.isArray(ids)) {
