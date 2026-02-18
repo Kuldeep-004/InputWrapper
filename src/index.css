@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+.wrapper {
+  position: relative;
+}
+
+.tooltip {
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.wrapper:focus-within .tooltip {
+  opacity: 1;
+  transform: scaleX(1);
+}

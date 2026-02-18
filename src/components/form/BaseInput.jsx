@@ -20,9 +20,7 @@ export default function BaseInput({ formMethods, field, theme }) {
   const inputRef = useRef(null);
   const hasAutofocused = useRef(false);
   const wrapperRef = useRef(null);
-  const [isFocused, setIsFocused] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
-  const [posReady, setPosReady] = useState(false);
 
   const value = formMethods.watch(id) || "";
   const errors = formMethods.getErrors();
@@ -35,20 +33,20 @@ export default function BaseInput({ formMethods, field, theme }) {
     }
   }, []);
 
-  useEffect(() => {
-    if (isFocused && error && inputRef.current) {
-      const inputRect = inputRef.current.getBoundingClientRect();
-      const wrapperRect = wrapperRef.current?.getBoundingClientRect();
+  // useEffect(() => {
+  //   if (isFocused && error && inputRef.current) {
+  //     const inputRect = inputRef.current.getBoundingClientRect();
+  //     const wrapperRect = wrapperRef.current?.getBoundingClientRect();
 
-      if (wrapperRect) {
-        setTooltipPosition({
-          top: inputRect.bottom - wrapperRect.top + 4,
-          left: inputRect.left - wrapperRect.left,
-        });
-      }
-      setPosReady(true);
-    }
-  }, [isFocused, error, value]);
+  //     if (wrapperRect) {
+  //       setTooltipPosition({
+  //         top: inputRect.bottom - wrapperRect.top + 4,
+  //         left: inputRect.left - wrapperRect.left,
+  //       });
+  //     }
+  //     setPosReady(true);
+  //   }
+  // }, [isFocused, error, value]);
 
   const mergedCss = {
     wrapper: css.wrapper || theme.wrapper || defaultTheme.wrapper,
@@ -91,7 +89,6 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const handleBlur = () => {
-    setIsFocused(false);
     const typeConfig = getFieldTypeConfig(type);
     if (typeConfig.normalizer) {
       const currentValue = formMethods.getValues([id])[id];
@@ -104,7 +101,13 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const handleFocus = () => {
-    setIsFocused(true);
+    const inputRect = inputRef.current?.getBoundingClientRect();
+    const wrapperRect = wrapperRef.current?.getBoundingClientRect();
+
+    setTooltipPosition({
+      top: inputRect.bottom - wrapperRect.top + 4,
+      left: inputRect.left - wrapperRect.left,
+    });
   };
 
   const SpecializedInput = getInputComponent(type);
@@ -166,11 +169,11 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const renderTooltip = () => {
-    if (!isFocused || !error || !posReady) return null;
+    if (!error) return null;
 
     return (
       <div
-        className="absolute z-50 px-3 py-2 text-sm bg-white rounded-md shadow-lg pointer-events-none"
+        className="tooltip absolute z-50 px-3 py-2 text-sm bg-white rounded-md shadow-lg pointer-events-none"
         style={{
           top: `${tooltipPosition.top}px`,
           left: `${tooltipPosition.left}px`,
@@ -187,7 +190,7 @@ export default function BaseInput({ formMethods, field, theme }) {
     return (
       <div
         ref={wrapperRef}
-        className={`flex-row items-center gap-3 ${mergedCss.wrapper} relative`}
+        className={`flex-row items-center gap-3 wrapper ${mergedCss.wrapper} relative`}
       >
         {renderLabel()}
         {renderInput()}
@@ -197,7 +200,7 @@ export default function BaseInput({ formMethods, field, theme }) {
   }
 
   return (
-    <div ref={wrapperRef} className={`${mergedCss.wrapper} relative`}>
+    <div ref={wrapperRef} className={`${mergedCss.wrapper} wrapper relative`}>
       {renderLabel()}
       {renderInput()}
       {renderTooltip()}
