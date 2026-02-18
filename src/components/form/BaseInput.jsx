@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { defaultTheme } from "./defaultTheme";
 import { getInputComponent } from "./SpecializedInputs";
 import { getFieldTypeConfig } from "./fieldTypes";
@@ -19,6 +19,10 @@ export default function BaseInput({ formMethods, field, theme }) {
 
   const inputRef = useRef(null);
   const hasAutofocused = useRef(false);
+  const wrapperRef = useRef(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const [posReady, setPosReady] = useState(false);
 
   const value = formMethods.watch(id) || "";
   const errors = formMethods.getErrors();
@@ -30,6 +34,21 @@ export default function BaseInput({ formMethods, field, theme }) {
       formMethods.focusField(id);
     }
   }, []);
+
+  useEffect(() => {
+    if (isFocused && error && inputRef.current) {
+      const inputRect = inputRef.current.getBoundingClientRect();
+      const wrapperRect = wrapperRef.current?.getBoundingClientRect();
+
+      if (wrapperRect) {
+        setTooltipPosition({
+          top: inputRect.bottom - wrapperRect.top + 4,
+          left: inputRect.left - wrapperRect.left,
+        });
+      }
+      setPosReady(true);
+    }
+  }, [isFocused, error, value]);
 
   const mergedCss = {
     wrapper: css.wrapper || theme.wrapper || defaultTheme.wrapper,
@@ -71,7 +90,8 @@ export default function BaseInput({ formMethods, field, theme }) {
     }
   };
 
-  const handleBlur = (e) => {
+  const handleBlur = () => {
+    setIsFocused(false);
     const typeConfig = getFieldTypeConfig(type);
     if (typeConfig.normalizer) {
       const currentValue = formMethods.getValues([id])[id];
@@ -81,6 +101,10 @@ export default function BaseInput({ formMethods, field, theme }) {
       }
     }
     formMethods.validateFields([id]);
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
   };
 
   const SpecializedInput = getInputComponent(type);
@@ -94,6 +118,7 @@ export default function BaseInput({ formMethods, field, theme }) {
           value={value}
           onChange={(id, val) => formMethods.setValues({ [id]: val })}
           onBlur={handleBlur}
+          onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           className={`${
             error
@@ -112,10 +137,12 @@ export default function BaseInput({ formMethods, field, theme }) {
     return (
       <input
         id={id}
+        ref={inputRef}
         type={type === "text" ? "text" : type}
         value={value}
         onChange={(e) => formMethods.setValues({ [id]: e.target.value })}
         onBlur={handleBlur}
+        onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         className={`${
           error ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""
@@ -138,31 +165,42 @@ export default function BaseInput({ formMethods, field, theme }) {
     );
   };
 
-  // // Special rendering for checkbox type
-  // if (type === "checkbox") {
-  //   return (
-  //     <div className={`flex items-center gap-3 ${mergedCss.wrapper}`}>
-  //       {renderInput()}
-  //       {renderLabel()}
-  //     </div>
-  //   );
-  // }
+  const renderTooltip = () => {
+    if (!isFocused || !error || !posReady) return null;
+
+    return (
+      <div
+        className="absolute z-50 px-3 py-2 text-sm bg-white rounded-md shadow-lg pointer-events-none"
+        style={{
+          top: `${tooltipPosition.top}px`,
+          left: `${tooltipPosition.left}px`,
+          maxWidth: "300px",
+          wordWrap: "break-word",
+        }}
+      >
+        <div className="relative">{error}</div>
+      </div>
+    );
+  };
 
   if (labelPosition === "left") {
     return (
-      <div className={`flex-row items-center gap-3 ${mergedCss.wrapper}`}>
+      <div
+        ref={wrapperRef}
+        className={`flex-row items-center gap-3 ${mergedCss.wrapper} relative`}
+      >
         {renderLabel()}
         {renderInput()}
-        <div className={mergedCss.error}>{error || "\u00A0"}</div>
+        {renderTooltip()}
       </div>
     );
   }
 
   return (
-    <div className={mergedCss.wrapper}>
+    <div ref={wrapperRef} className={`${mergedCss.wrapper} relative`}>
       {renderLabel()}
       {renderInput()}
-      <div className={mergedCss.error}>{error || "\u00A0"}</div>
+      {renderTooltip()}
     </div>
   );
 }
