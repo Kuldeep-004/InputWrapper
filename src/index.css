@@ -1,16 +1,14 @@
 @import "tailwindcss";
-
 .wrapper {
   position: relative;
 }
-
 .tooltip {
   opacity: 0;
-  transform: scaleX(0);
-  transform-origin: left;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.1s ease-out, opacity 0.1s ease-out;
 }
 
 .wrapper:focus-within .tooltip {
   opacity: 1;
-  transform: scaleX(1);
+  clip-path: inset(0 0 0 0);
 }
