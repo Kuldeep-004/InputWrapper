@@ -6,6 +6,7 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
   const [formState] = useState(() => ({
     values: { ...initialValues },
     errors: {},
+    warnings: {},
     touched: {},
     watchers: new Map(),
   }));
@@ -112,47 +113,47 @@ export function useCreateForm({ schema, theme = {}, initialValues = {} }) {
   );
 
   const useWatch = (id) => {
-  const [value, setValue] = useState(formState.values[id]);
+    const [value, setValue] = useState(formState.values[id]);
 
-  useEffect(() => {
-    if (!formState.watchers.has(id)) {
-      formState.watchers.set(id, new Set());
-    }
-
-    const set = formState.watchers.get(id);
-    set.add(setValue);
-
-    return () => {
-      set.delete(setValue);
-    };
-  }, [id]);
-
-  return value;
-};
-
-const useWatchAll = () => {
-  const [allValues, setAllValues] = useState({ ...formState.values });
-
-  useEffect(() => {
-    const update = () => setAllValues({ ...formState.values });
-
-    allIds.forEach((fieldId) => {
-      if (!formState.watchers.has(fieldId)) {
-        formState.watchers.set(fieldId, new Set());
+    useEffect(() => {
+      if (!formState.watchers.has(id)) {
+        formState.watchers.set(id, new Set());
       }
-      formState.watchers.get(fieldId).add(update);
-    });
 
-    return () => {
+      const set = formState.watchers.get(id);
+      set.add(setValue);
+
+      return () => {
+        set.delete(setValue);
+      };
+    }, [id]);
+
+    return value;
+  };
+
+  const useWatchAll = () => {
+    const [allValues, setAllValues] = useState({ ...formState.values });
+
+    useEffect(() => {
+      const update = () => setAllValues({ ...formState.values });
+
       allIds.forEach((fieldId) => {
-        const set = formState.watchers.get(fieldId);
-        if (set) set.delete(update);
+        if (!formState.watchers.has(fieldId)) {
+          formState.watchers.set(fieldId, new Set());
+        }
+        formState.watchers.get(fieldId).add(update);
       });
-    };
-  }, [allIds]);
 
-  return allValues;
-};
+      return () => {
+        allIds.forEach((fieldId) => {
+          const set = formState.watchers.get(fieldId);
+          if (set) set.delete(update);
+        });
+      };
+    }, [allIds]);
+
+    return allValues;
+  };
 
   const formMethods = useMemo(
     () => ({
@@ -196,6 +197,9 @@ const useWatchAll = () => {
 
           if (formState.errors[id] && formState.touched[id]) {
             formState.errors[id] = null;
+          }
+          if (formState.warnings[id]) {
+            formState.warnings[id] = null;
           }
         });
       },
@@ -277,6 +281,7 @@ const useWatchAll = () => {
       reset: (newValues = {}) => {
         formState.values = { ...initialValues, ...newValues };
         formState.errors = {};
+        formState.warnings = {};
         formState.touched = {};
 
         const firstElId = fieldIds[0];
@@ -296,6 +301,7 @@ const useWatchAll = () => {
 
           formState.values[id] = "";
           formState.errors[id] = null;
+          formState.warnings[id] = null;
           formState.touched[id] = false;
 
           notifyWatchers(id);
@@ -345,6 +351,52 @@ const useWatchAll = () => {
         } else {
           allIds.forEach((id) => {
             formState.errors[id] = null;
+          });
+        }
+
+        forceUpdate({});
+      },
+
+      getWarnings: (ids) => {
+        if (ids && Array.isArray(ids)) {
+          const warnings = {};
+          ids.forEach((id) => {
+            if (formState.warnings[id]) {
+              warnings[id] = formState.warnings[id];
+            }
+          });
+          return warnings;
+        }
+        return { ...formState.warnings };
+      },
+
+      setWarnings: (warnings) => {
+        if (
+          !warnings ||
+          typeof warnings !== "object" ||
+          Array.isArray(warnings)
+        )
+          return;
+
+        Object.keys(warnings).forEach((id) => {
+          if (fieldMap[id]) {
+            formState.warnings[id] = warnings[id];
+          }
+        });
+
+        forceUpdate({});
+      },
+
+      clearWarnings: (ids) => {
+        if (ids && Array.isArray(ids)) {
+          ids.forEach((id) => {
+            if (fieldMap[id]) {
+              formState.warnings[id] = null;
+            }
+          });
+        } else {
+          allIds.forEach((id) => {
+            formState.warnings[id] = null;
           });
         }
 

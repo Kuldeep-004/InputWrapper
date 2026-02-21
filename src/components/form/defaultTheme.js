@@ -32,6 +32,8 @@ export const defaultTheme = {
 
   error: "text-red-500 text-xs min-h-[16px] leading-4",
 
+  warning: "text-yellow-600 text-xs min-h-[16px] leading-4",
+
   actions: "mt-6 flex gap-3 justify-end",
 };
 

@@ -172,15 +172,13 @@ export default function App() {
     schema: dynamicSchema,
   });
 
-  const pan=formMethods.watch("pan");
+  const pan = formMethods.watch("pan");
 
-  useEffect(()=>{
-    if(pan?.length>4){
-      setDynamicSchema((prev)=>
-        prev.map((p)=>({...p,required:false}))
-      )
+  useEffect(() => {
+    if (pan?.length > 4) {
+      setDynamicSchema((prev) => prev.map((p) => ({ ...p, required: false })));
     }
-  },[pan])
+  }, [pan]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -240,6 +238,33 @@ export default function App() {
               className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
             >
               Clear PAN Error
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                formMethods.setWarnings({
+                  gst: "This GST format is deprecated",
+                  profitMargin: "Profit margin seems low",
+                  email: "Consider using a business email",
+                })
+              }
+              className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+            >
+              Set Warnings
+            </button>
+            <button
+              type="button"
+              onClick={() => formMethods.clearWarnings()}
+              className="bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-700 transition-colors"
+            >
+              Clear All Warnings
+            </button>
+            <button
+              type="button"
+              onClick={() => formMethods.clearWarnings(["gst"])}
+              className="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
+            >
+              Clear GST Warning
             </button>
           </div>
         </div>

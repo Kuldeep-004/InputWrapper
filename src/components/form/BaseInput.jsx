@@ -25,6 +25,11 @@ export default function BaseInput({ formMethods, field, theme }) {
   const value = formMethods.watch(id) || "";
   const errors = formMethods.getErrors();
   const error = errors[id];
+  const warnings = formMethods.getWarnings();
+  const warning = warnings[id];
+
+  const displayMessage = error ?? warning ?? null;
+  const isError = error;
 
   useEffect(() => {
     if (autofocus && !hasAutofocused.current) {
@@ -53,6 +58,7 @@ export default function BaseInput({ formMethods, field, theme }) {
     label: css.label || theme.label || defaultTheme.label,
     input: css.input || theme.input || defaultTheme.input,
     error: css.error || theme.error || defaultTheme.error,
+    warning: css.warning || theme.warning || defaultTheme.warning,
   };
 
   const handleKeyDown = (e) => {
@@ -169,11 +175,13 @@ export default function BaseInput({ formMethods, field, theme }) {
   };
 
   const renderTooltip = () => {
-    if (!error) return null;
+    if (!displayMessage) return null;
 
     return (
       <div
-        className="tooltip absolute z-50 px-3 py-2 text-sm bg-white rounded-md shadow-lg pointer-events-none"
+        className={`tooltip absolute z-50 px-3 py-2 text-sm rounded-md shadow-lg pointer-events-none ${
+          isError ? "bg-white" : "bg-yellow-50 border border-yellow-200"
+        }`}
         style={{
           top: `${tooltipPosition.top}px`,
           left: `${tooltipPosition.left}px`,
@@ -181,7 +189,11 @@ export default function BaseInput({ formMethods, field, theme }) {
           wordWrap: "break-word",
         }}
       >
-        <div className="relative">{error}</div>
+        <div
+          className={`relative ${isError ? "text-red-600" : "text-yellow-700"}`}
+        >
+          {displayMessage}
+        </div>
       </div>
     );
   };
